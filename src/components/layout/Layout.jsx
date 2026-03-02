@@ -41,7 +41,7 @@ export default function Layout({ children }) {
             {/* Footer */}
             <footer className="border-t border-gray-300 py-6">
                 <div className="max-w-6xl mx-auto px-6 text-sm text-gray-600 flex justify-between">
-                    <span>© 2026 Enterprise Bank</span>
+                    <span>© 2026 Commerce Bank</span>
                     <span>Secure Appointment Booking System</span>
                 </div>
             </footer>

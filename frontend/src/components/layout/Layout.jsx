@@ -22,8 +22,8 @@ export default function Layout({ children }) {
             {/* Top Navigation */}
             <Navbar />
 
-            {/* Progress Indicator (Hidden on Confirmation) */}
-            {location.pathname !== "/confirmation" && (
+            {/* Progress Indicator (Hidden on Confirmation and Appointments) */}
+            {location.pathname !== "/confirmation" && location.pathname !== "/appointments" && (
                 <div className="border-b border-gray-300">
                     <div className="max-w-6xl mx-auto px-6 py-6">
                         <StepProgress currentStep={currentStep} />
@@ -41,7 +41,7 @@ export default function Layout({ children }) {
             {/* Footer */}
             <footer className="border-t border-gray-300 py-6">
                 <div className="max-w-6xl mx-auto px-6 text-sm text-gray-600 flex justify-between">
-                    <span>© 2026 Enterprise Bank</span>
+                    <span>© 2026 Commerce Bank</span>
                     <span>Secure Appointment Booking System</span>
                 </div>
             </footer>

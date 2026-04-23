@@ -1,5 +1,6 @@
 package com.team8.scheduler.service;
 
+import com.team8.scheduler.dto.AppointmentDetailDto;
 import com.team8.scheduler.entity.Appointment;
 import com.team8.scheduler.entity.User;
 import com.team8.scheduler.repository.AppointmentRepository;
@@ -21,6 +22,23 @@ public class AppointmentService {
 
     public List<Appointment> getAllAppointments() {
         return appointmentRepository.findAll();
+    }
+
+    public List<AppointmentDetailDto> getAllAppointmentsWithDetails() {
+        return appointmentRepository.findAll().stream()
+                .map(a -> new AppointmentDetailDto(
+                        a.getId(),
+                        a.getAppointmentDateTime() != null ? a.getAppointmentDateTime().toString() : null,
+                        a.getServiceName(),
+                        a.getBranchId(),
+                        a.getNotes(),
+                        a.getStatus(),
+                        a.getUser().getFirstName(),
+                        a.getUser().getLastName(),
+                        a.getUser().getEmail(),
+                        a.getUser().getPhoneNumber()
+                ))
+                .toList();
     }
 
     public Appointment getAppointmentById(Long id) {

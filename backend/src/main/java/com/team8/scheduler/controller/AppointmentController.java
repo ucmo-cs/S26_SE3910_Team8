@@ -1,5 +1,6 @@
 package com.team8.scheduler.controller;
 
+import com.team8.scheduler.dto.AppointmentDetailDto;
 import com.team8.scheduler.entity.Appointment;
 import com.team8.scheduler.service.AppointmentService;
 import jakarta.validation.Valid;
@@ -32,6 +33,11 @@ public class AppointmentController {
             return appointmentService.getAppointmentsByUserId(userId);
         }
         return appointmentService.getAllAppointments();
+    }
+
+    @GetMapping("/details")
+    public List<AppointmentDetailDto> getAllAppointmentsWithDetails() {
+        return appointmentService.getAllAppointmentsWithDetails();
     }
 
     @GetMapping("/{id}")

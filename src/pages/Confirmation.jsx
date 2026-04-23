@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 
 export default function Confirmation() {
-    const { booking, resetBooking } = useBooking();
+    const { booking, resetBooking, confirmedBooking } = useBooking();
     const navigate = useNavigate();
 
     // Safety redirect if user somehow lands here without full booking
@@ -13,11 +13,12 @@ export default function Confirmation() {
             !booking.branch ||
             !booking.date ||
             !booking.time ||
-            !booking.customer.fullName
+            !booking.customer.fullName ||
+            !confirmedBooking
         ) {
             navigate("/", { replace: true });
         }
-    }, [booking, navigate]);
+    }, [booking, confirmedBooking, navigate]);
 
     const handleBookAnother = () => {
         resetBooking();
@@ -105,6 +106,27 @@ export default function Confirmation() {
                         <p className="text-sm text-gray-500">Phone</p>
                         <p className="font-medium">
                             {booking.customer?.phone}
+                        </p>
+                    </div>
+
+                    <div>
+                        <p className="text-sm text-gray-500">Appointment ID</p>
+                        <p className="font-medium">
+                            {confirmedBooking?.appointment?.id}
+                        </p>
+                    </div>
+
+                    <div>
+                        <p className="text-sm text-gray-500">Status</p>
+                        <p className="font-medium">
+                            {confirmedBooking?.appointment?.status}
+                        </p>
+                    </div>
+
+                    <div className="md:col-span-2">
+                        <p className="text-sm text-gray-500">Notes</p>
+                        <p className="font-medium">
+                            {confirmedBooking?.appointment?.notes || "None"}
                         </p>
                     </div>
 

@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 
 export default function PersonalInformation() {
-    const { booking, updateCustomer } = useBooking();
+    const { booking, updateCustomer, submitBooking, isSubmitting, submitError } = useBooking();
     const navigate = useNavigate();
 
     const [errors, setErrors] = useState({});
@@ -24,9 +24,16 @@ export default function PersonalInformation() {
         return Object.keys(newErrors).length === 0;
     };
 
-    const handleSubmit = () => {
-        if (validate()) {
+    const handleSubmit = async () => {
+        if (!validate()) {
+            return;
+        }
+
+        try {
+            await submitBooking();
             navigate("/confirmation");
+        } catch {
+            // submitError from context is shown in UI.
         }
     };
 
@@ -112,10 +119,14 @@ export default function PersonalInformation() {
 
                 <button
                     onClick={handleSubmit}
+                    disabled={isSubmitting}
                     className="w-full bg-[#228B22] text-white py-4 text-lg rounded-none"
                 >
-                    Confirm Appointment
+                    {isSubmitting ? "Confirming..." : "Confirm Appointment"}
                 </button>
+                {submitError && (
+                    <p className="text-red-600 text-sm">{submitError}</p>
+                )}
             </div>
         </div>
     );

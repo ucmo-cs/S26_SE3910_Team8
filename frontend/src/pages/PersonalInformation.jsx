@@ -17,8 +17,10 @@ export default function PersonalInformation() {
         if (!booking.customer.email.match(/^\S+@\S+\.\S+$/))
             newErrors.email = "Valid email required.";
 
-        if (!booking.customer.phone.match(/^\d{10}$/))
-            newErrors.phone = "Enter 10-digit phone number.";
+        const digitsOnly = booking.customer.phone.replace(/\D/g, "");
+
+        if (!digitsOnly.match(/^\d{10}$/))
+            newErrors.phone = "Enter a valid 10-digit phone number.";
 
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
@@ -35,6 +37,18 @@ export default function PersonalInformation() {
         } catch {
             // submitError from context is shown in UI.
         }
+    };
+
+    const formatPhoneNumber = (value) => {
+        const digits = value.replace(/\D/g, "").slice(0, 10); // only digits, max 10
+
+        const part1 = digits.slice(0, 3);
+        const part2 = digits.slice(3, 6);
+        const part3 = digits.slice(6, 10);
+
+        if (digits.length < 4) return part1;
+        if (digits.length < 7) return `(${part1}) ${part2}`;
+        return `(${part1}) ${part2}-${part3}`;
     };
 
     return (
@@ -87,9 +101,10 @@ export default function PersonalInformation() {
                     <input
                         type="tel"
                         value={booking.customer.phone}
-                        onChange={(e) =>
-                            updateCustomer("phone", e.target.value)
-                        }
+                        onChange={(e) => {
+                            const formatted = formatPhoneNumber(e.target.value);
+                            updateCustomer("phone", formatted);
+                        }}
                         className={`w-full border p-3 rounded-none ${
                             errors.phone ? "border-red-600" : "border-gray-300"
                         }`}

@@ -29,31 +29,57 @@ export default function SelectDateTime() {
         return `${hours}:${minutes}`;
     };
 
+    const formatDisplayTime = (timeString) => {
+    const [hour, minute] = timeString.split(":");
+    const date = new Date();
+    date.setHours(hour, minute);
+
+    return date.toLocaleTimeString([], {
+        hour: "numeric",
+        minute: "2-digit",
+        hour12: true
+    });
+};
+
     const generateAvailableTimes = () => {
-        if (!booking.date || !booking.service || !isWeekday(booking.date)) {
-            return [];
+    if (!booking.date || !booking.service || !isWeekday(booking.date)) {
+        return [];
+    }
+
+    const openMinutes = 8 * 60; // 8:00 AM
+    const closeMinutes = 17 * 60; // 5:00 PM
+    const slotIntervalMinutes = 15;
+
+    const serviceDurationMinutes = parseDurationMinutes(booking.service.duration);
+    const latestStart = closeMinutes - serviceDurationMinutes;
+
+    if (latestStart < openMinutes) {
+        return [];
+    }
+
+    const times = [];
+
+    const now = new Date();
+    const todayString = now.toISOString().split("T")[0];
+    const isToday = booking.date === todayString;
+
+    const currentMinutes = now.getHours() * 60 + now.getMinutes();
+
+    for (
+        let minute = openMinutes;
+        minute <= latestStart;
+        minute += slotIntervalMinutes
+    ) {
+        // 🚫 Skip past times if booking is for today
+        if (isToday && minute <= currentMinutes) {
+            continue;
         }
 
-        const openMinutes = 8 * 60; // 8:00 AM
-        const closeMinutes = 17 * 60; // 5:00 PM
-        const slotIntervalMinutes = 15;
-        const serviceDurationMinutes = parseDurationMinutes(booking.service.duration);
-        const latestStart = closeMinutes - serviceDurationMinutes;
+        times.push(formatTime(minute)); // still returns "HH:mm"
+    }
 
-        if (latestStart < openMinutes) {
-            return [];
-        }
-
-        const times = [];
-        for (
-            let minute = openMinutes;
-            minute <= latestStart;
-            minute += slotIntervalMinutes
-        ) {
-            times.push(formatTime(minute));
-        }
-        return times;
-    };
+    return times;
+};
 
     const availableTimes = generateAvailableTimes().filter(
         (time) => !bookedTimes.has(time)
@@ -168,7 +194,7 @@ export default function SelectDateTime() {
                                                 : "border-gray-300"
                                         }`}
                                     >
-                                        {time}
+                                        {formatDisplayTime(time)}
                                     </button>
                                 ))}
                             </div>

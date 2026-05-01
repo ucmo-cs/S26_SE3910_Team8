@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 
 export default function PersonalInformation() {
-    const { booking, updateCustomer } = useBooking();
+    const { booking, updateCustomer, submitBooking, isSubmitting, submitError } = useBooking();
     const navigate = useNavigate();
 
     const [errors, setErrors] = useState({});
@@ -17,17 +17,38 @@ export default function PersonalInformation() {
         if (!booking.customer.email.match(/^\S+@\S+\.\S+$/))
             newErrors.email = "Valid email required.";
 
-        if (!booking.customer.phone.match(/^\d{10}$/))
-            newErrors.phone = "Enter 10-digit phone number.";
+        const digitsOnly = booking.customer.phone.replace(/\D/g, "");
+
+        if (!digitsOnly.match(/^\d{10}$/))
+            newErrors.phone = "Enter a valid 10-digit phone number.";
 
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
 
-    const handleSubmit = () => {
-        if (validate()) {
-            navigate("/confirmation");
+    const handleSubmit = async () => {
+        if (!validate()) {
+            return;
         }
+
+        try {
+            await submitBooking();
+            navigate("/confirmation");
+        } catch {
+            // submitError from context is shown in UI.
+        }
+    };
+
+    const formatPhoneNumber = (value) => {
+        const digits = value.replace(/\D/g, "").slice(0, 10); // only digits, max 10
+
+        const part1 = digits.slice(0, 3);
+        const part2 = digits.slice(3, 6);
+        const part3 = digits.slice(6, 10);
+
+        if (digits.length < 4) return part1;
+        if (digits.length < 7) return `(${part1}) ${part2}`;
+        return `(${part1}) ${part2}-${part3}`;
     };
 
     return (
@@ -80,9 +101,10 @@ export default function PersonalInformation() {
                     <input
                         type="tel"
                         value={booking.customer.phone}
-                        onChange={(e) =>
-                            updateCustomer("phone", e.target.value)
-                        }
+                        onChange={(e) => {
+                            const formatted = formatPhoneNumber(e.target.value);
+                            updateCustomer("phone", formatted);
+                        }}
                         className={`w-full border p-3 rounded-none ${
                             errors.phone ? "border-red-600" : "border-gray-300"
                         }`}
@@ -112,10 +134,14 @@ export default function PersonalInformation() {
 
                 <button
                     onClick={handleSubmit}
+                    disabled={isSubmitting}
                     className="w-full bg-[#228B22] text-white py-4 text-lg rounded-none"
                 >
-                    Confirm Appointment
+                    {isSubmitting ? "Confirming..." : "Confirm Appointment"}
                 </button>
+                {submitError && (
+                    <p className="text-red-600 text-sm">{submitError}</p>
+                )}
             </div>
         </div>
     );

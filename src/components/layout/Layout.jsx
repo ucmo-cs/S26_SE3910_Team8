@@ -22,8 +22,8 @@ export default function Layout({ children }) {
             {/* Top Navigation */}
             <Navbar />
 
-            {/* Progress Indicator (Hidden on Confirmation) */}
-            {location.pathname !== "/confirmation" && (
+            {/* Progress Indicator (Hidden on Confirmation and Appointments) */}
+            {location.pathname !== "/confirmation" && location.pathname !== "/appointments" && (
                 <div className="border-b border-gray-300">
                     <div className="max-w-6xl mx-auto px-6 py-6">
                         <StepProgress currentStep={currentStep} />

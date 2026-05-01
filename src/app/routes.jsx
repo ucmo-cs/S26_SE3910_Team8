@@ -8,6 +8,7 @@ import SelectBranch from "../pages/SelectBranch";
 import SelectDateTime from "../pages/SelectDateTime";
 import PersonalInformation from "../pages/PersonalInformation";
 import Confirmation from "../pages/Confirmation";
+import AllAppointments from "../pages/AllAppointments";
 
 /**
  * Step Guard Component
@@ -80,6 +81,9 @@ export default function AppRoutes() {
                         </StepGuard>
                     }
                 />
+
+                {/* All Appointments */}
+                <Route path="/appointments" element={<AllAppointments />} />
 
                 {/* Catch-all */}
                 <Route path="*" element={<Navigate to="/" replace />} />
